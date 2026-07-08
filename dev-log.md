@@ -20,3 +20,14 @@ This file documents the development progress of LensFlow.
 ### Notes
 The goal is to build LensFlow as an AI-powered accessibility platform that enables hands-free computer interaction through computer vision and customizable hand gestures.
 
+## July 8
+
+### Completed
+- Installed OpenCV
+- Installed MediaPipe
+- Installed NumPy
+- Built the first camera module
+- Successfully displayed live webcam feed
+
+### Next
+- Detect hand landmarks using MediaPipe
