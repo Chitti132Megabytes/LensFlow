@@ -31,3 +31,17 @@ The goal is to build LensFlow as an AI-powered accessibility platform that enabl
 
 ### Next
 - Detect hand landmarks using MediaPipe
+
+## Sprint 3 - Basic Gesture Recognition
+
+### Completed
+- Added GestureRecognizer class
+- Implemented finger state detection
+- Recognized Open Palm
+- Recognized Fist
+- Displayed gesture on webcam
+
+### Learned
+- MediaPipe landmarks
+- Landmark coordinate comparison
+- Basic rule-based gesture recognition

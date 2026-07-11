@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 from gesture_recognizer import GestureRecognizer
+from gesture_stabilizer import GestureStabilizer
 
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
@@ -14,6 +15,7 @@ hands = mp_hands.Hands(
 # Utility for drawing landmarks
 mp_draw = mp.solutions.drawing_utils
 recognizer = GestureRecognizer()
+stabilizer = GestureStabilizer()
 
 
 def start_hand_detection():
@@ -54,14 +56,21 @@ def start_hand_detection():
                 
                 gesture = recognizer.detect(hand_landmarks)
 
+                confirmed_gesture = stabilizer.update(gesture)
+
+                display_text = "Detecting..."
+
+                if confirmed_gesture:
+                    display_text = f"Confirmed: {confirmed_gesture}"
+
                 cv2.putText(
-                    frame,
-                    gesture,
-                    (20, 50),
-                    cv2.FONT_HERSHEY_SIMPLEX,
-                    1,
-                    (0, 255, 0),
-                    2
+                frame,
+                display_text,
+                (20, 50),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                1,
+                (0, 255, 0),
+                2
                 )
 
         cv2.imshow("LensFlow - Hand Detection", frame)
