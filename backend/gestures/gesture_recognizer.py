@@ -24,4 +24,8 @@ class GestureRecognizer:
         if index and middle and ring and pinky:
             return "✋ Open Palm"
 
+        # Peace Sign
+        if index and middle and not ring and not pinky:
+            return "✌️ Peace"
+        
         return "Unknown"

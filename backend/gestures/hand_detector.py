@@ -1,22 +1,24 @@
+from automation.action_manager import ActionManager
 import cv2
 import mediapipe as mp
-from gesture_recognizer import GestureRecognizer
-from gesture_stabilizer import GestureStabilizer
+from gestures.gesture_recognizer import GestureRecognizer
+from gestures.gesture_stabilizer import GestureStabilizer
 
-# Initialize MediaPipe Hands
+from config.settings import *
 mp_hands = mp.solutions.hands
+
 hands = mp_hands.Hands(
     static_image_mode=False,
-    max_num_hands=2,
-    min_detection_confidence=0.7,
-    min_tracking_confidence=0.5
+    max_num_hands=MAX_HANDS,
+    min_detection_confidence=DETECTION_CONFIDENCE,
+    min_tracking_confidence=TRACKING_CONFIDENCE
 )
 
 # Utility for drawing landmarks
 mp_draw = mp.solutions.drawing_utils
 recognizer = GestureRecognizer()
 stabilizer = GestureStabilizer()
-
+action_manager = ActionManager()
 
 def start_hand_detection():
     camera = cv2.VideoCapture(0)
@@ -62,6 +64,9 @@ def start_hand_detection():
 
                 if confirmed_gesture:
                     display_text = f"Confirmed: {confirmed_gesture}"
+
+                    # Pass gesture to ActionManager
+                    action_manager.execute(confirmed_gesture)
 
                 cv2.putText(
                 frame,
