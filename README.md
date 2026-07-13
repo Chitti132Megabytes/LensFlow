@@ -1,2 +1,15 @@
-# LensFlow
-An AI-powered accessibility platform that enables hands-free computer interaction using customizable hand gestures and computer vision.
+----------------------------------------------------
+LensFlow
+AI-Powered Gesture-Based Accessibility Platform
+
+[Demo GIF]
+
+✨ Features
+🏗️ Architecture
+🚀 Installation
+📸 Screenshots
+🎯 Roadmap
+🛠️ Technologies
+📖 Documentation
+🤝 Contributing
+----------------------------------------------------
