@@ -45,3 +45,19 @@ The goal is to build LensFlow as an AI-powered accessibility platform that enabl
 - MediaPipe landmarks
 - Landmark coordinate comparison
 - Basic rule-based gesture recognition
+
+## Sprint 5 – Gesture Recognition Pipeline
+
+### ✅ Completed
+- Refactored project with `main.py` as the application entry point
+- Added `GestureRecognizer` for gesture detection
+- Added `GestureStabilizer` to prevent false triggers
+- Implemented `ActionManager` for handling confirmed gestures
+- Moved configurable values into `settings.py`
+- Improved project architecture and modularity
+
+### 📚 Learned
+- Python package imports
+- Modular software architecture
+- Gesture stability (debouncing)
+- Single Responsibility Principle

@@ -1,3 +1,7 @@
+from automation import action_manager
+from automation import action_manager
+import json
+from automation.action_manager import ActionManager
 from automation.action_manager import ActionManager
 import cv2
 import mediapipe as mp
@@ -19,6 +23,9 @@ mp_draw = mp.solutions.drawing_utils
 recognizer = GestureRecognizer()
 stabilizer = GestureStabilizer()
 action_manager = ActionManager()
+
+with open("backend/config/gesture_map.json", "r", encoding="utf-8") as file:
+    gesture_map = json.load(file)
 
 def start_hand_detection():
     camera = cv2.VideoCapture(0)
@@ -66,7 +73,11 @@ def start_hand_detection():
                     display_text = f"Confirmed: {confirmed_gesture}"
 
                     # Pass gesture to ActionManager
-                    action_manager.execute(confirmed_gesture)
+
+                    action = gesture_map.get(confirmed_gesture)
+                    if action:
+                            action_manager.execute(confirmed_gesture, action)
+
 
                 cv2.putText(
                 frame,

@@ -1,28 +1,67 @@
 import subprocess
+import platform
+import time
+
 
 class ActionManager:
 
     def __init__(self):
         self.active = False
-        self.last_action = None
+        self.last_action = ""
+        self.last_action_time = 0
+        self.cooldown = 2    # seconds
 
-    def execute(self, gesture):
+    def execute(self, gesture, action):
 
-        if gesture == self.last_action:
+        # Activation
+        if action == "ACTIVATE":
+            if not self.active:
+                self.active = True
+                print("✅ LensFlow Activated")
             return
 
-        self.last_action = gesture
+        # Deactivation
+        if action == "DEACTIVATE":
+            if self.active:
+                self.active = False
+                print("🛑 LensFlow Deactivated")
+            return
 
-        if gesture == "✋ Open Palm":
-            self.active = True
-            print("✅ LensFlow Activated")
+        # Ignore gestures while inactive
+        if not self.active:
+            return
 
-        elif gesture == "✊ Fist":
-            self.active = False
-            print("🛑 LensFlow Deactivated")
+        print(f"Executing action: {action}")
 
-        elif self.active:
+        current_time = time.time()
 
-            if gesture == "✌️ Peace":
-                print("Opening Calculator...")
-                subprocess.Popen("calc.exe")
+        if (
+            action == self.last_action and
+            current_time - self.last_action_time < self.cooldown
+        ):
+            return
+
+        self.last_action = action
+        self.last_action_time = current_time
+        
+        
+        # Launch applicationsq
+        self.launch(action)
+
+    def launch(self, app):
+
+        system = platform.system()
+
+        try:
+
+            if system == "Windows":
+                subprocess.Popen(app, shell=True)
+
+            elif system == "Darwin":
+                subprocess.Popen(["open", "-a", app])
+
+            elif system == "Linux":
+                subprocess.Popen([app])
+
+        except Exception as e:
+            print(f"❌ Could not launch {app}: {e}")

@@ -9,23 +9,68 @@ class GestureRecognizer:
     def finger_up(self, tip, pip, landmarks):
         return landmarks[tip].y < landmarks[pip].y
 
-    def detect(self, hand_landmarks):
+    def thumb_up(self, landmarks):
+        return landmarks[4].y < landmarks[3].y
 
-        landmarks = hand_landmarks.landmark
+    def is_fist(self, landmarks):
 
         index = self.finger_up(8, 6, landmarks)
         middle = self.finger_up(12, 10, landmarks)
         ring = self.finger_up(16, 14, landmarks)
         pinky = self.finger_up(20, 18, landmarks)
 
-        if not index and not middle and not ring and not pinky:
+        thumb = self.thumb_up(landmarks)
+
+        return (
+            not thumb and
+            not index and
+            not middle and
+            not ring and
+            not pinky
+        )
+
+    def is_open_palm(self, landmarks):
+
+        return (
+            self.finger_up(8, 6, landmarks) and
+            self.finger_up(12, 10, landmarks) and
+            self.finger_up(16, 14, landmarks) and
+            self.finger_up(20, 18, landmarks)
+        )
+
+    def is_peace(self, landmarks):
+
+        return (
+            self.finger_up(8, 6, landmarks) and
+            self.finger_up(12, 10, landmarks) and
+            not self.finger_up(16, 14, landmarks) and
+            not self.finger_up(20, 18, landmarks)
+        )
+
+    def is_thumbs_up(self, landmarks):
+
+        return (
+            self.thumb_up(landmarks) and
+            not self.finger_up(8, 6, landmarks) and
+            not self.finger_up(12, 10, landmarks) and
+            not self.finger_up(16, 14, landmarks) and
+            not self.finger_up(20, 18, landmarks)
+        )
+
+    def detect(self, hand_landmarks):
+
+        landmarks = hand_landmarks.landmark
+
+        if self.is_thumbs_up(landmarks):
+            return "👍 Thumbs Up"
+
+        if self.is_fist(landmarks):
             return "✊ Fist"
 
-        if index and middle and ring and pinky:
+        if self.is_open_palm(landmarks):
             return "✋ Open Palm"
 
-        # Peace Sign
-        if index and middle and not ring and not pinky:
+        if self.is_peace(landmarks):
             return "✌️ Peace"
-        
+
         return "Unknown"
