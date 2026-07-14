@@ -1,7 +1,7 @@
 import subprocess
 import platform
 import time
-
+from automation.flow_manager import FlowManager
 
 class ActionManager:
 
@@ -9,7 +9,8 @@ class ActionManager:
         self.active = False
         self.last_action = ""
         self.last_action_time = 0
-        self.cooldown = 2    # seconds
+        self.cooldown = 2 
+        self.flow_manager = FlowManager()   # seconds
 
     def execute(self, gesture, action):
 
@@ -46,7 +47,8 @@ class ActionManager:
         
         
         # Launch applicationsq
-        self.launch(action)
+        # Execute Flow
+        self.flow_manager.execute_flow(action)
 
     def launch(self, app):
 

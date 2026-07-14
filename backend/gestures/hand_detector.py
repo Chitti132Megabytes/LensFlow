@@ -1,3 +1,6 @@
+from mediapipe import framework
+import os
+from mediapipe import framework
 from automation import action_manager
 from automation import action_manager
 import json
@@ -37,6 +40,9 @@ def start_hand_detection():
     print("✅ Hand Detection Started")
     print("Press Q to quit.")
 
+    current_gesture = "None"
+    current_action = "None"
+
     while True:
         success, frame = camera.read()
 
@@ -70,24 +76,90 @@ def start_hand_detection():
                 display_text = "Detecting..."
 
                 if confirmed_gesture:
-                    display_text = f"Confirmed: {confirmed_gesture}"
-
-                    # Pass gesture to ActionManager
+                    current_gesture = confirmed_gesture
 
                     action = gesture_map.get(confirmed_gesture)
-                    if action:
-                            action_manager.execute(confirmed_gesture, action)
 
+                    if action:
+                        current_action = action
+                        action_manager.execute(confirmed_gesture, action)
+
+                    display_text = f"Confirmed: {confirmed_gesture}"
+
+
+               
+
+                display_action = "None"
+
+                if current_action != "None":
+                    display_action = os.path.splitext(os.path.basename(current_action))[0]
 
                 cv2.putText(
-                frame,
-                display_text,
-                (20, 50),
-                cv2.FONT_HERSHEY_SIMPLEX,
-                1,
-                (0, 255, 0),
-                2
+                    frame,
+                    f"Action : {display_action}",
+                    (20,130),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    0.6,
+                    (255,255,255),
+                    2
                 )
+
+
+            # Background panel
+        cv2.rectangle(frame, (10, 10), (380, 170), (40, 40, 40), -1)
+
+        # Title
+        cv2.putText(
+            frame,
+            "LensFlow",
+            (20, 40),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.8,
+            (255, 255, 255),
+            2
+        )
+
+        # Status
+        status = "ACTIVE" if action_manager.active else "INACTIVE"
+        status_color = (0, 255, 0) if action_manager.active else (0, 0, 255)
+
+        cv2.putText(
+            frame,
+            f"Status : {status}",
+            (20, 70),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            status_color,
+            2
+        )
+
+        # Gesture
+        cv2.putText(
+            frame,
+            f"Gesture : {current_gesture}",
+            (20, 100),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (255,255,255),
+            2
+        )
+
+        # Action
+        display_action = "None"
+
+        if current_action != "None":
+            display_action = os.path.splitext(os.path.basename(current_action))[0]
+
+        cv2.putText(
+            frame,
+            f"Action : {display_action}",
+            (20, 130),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.6,
+            (255, 255, 255),
+            2
+        )
+     
 
         cv2.imshow("LensFlow - Hand Detection", frame)
 

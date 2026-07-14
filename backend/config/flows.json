@@ -1,0 +1,26 @@
+{
+    "coding_flow": [
+        {
+            "type": "launch",
+            "target": "chrome"
+        },
+
+        {
+            "type": "wait",
+            "duration": 2
+        },
+
+        {
+            "type": "website",
+            "url": "https://github.com"
+        },
+
+        {
+            "type": "hotkey",
+            "keys": [
+                "ctrl",
+                "l"
+            ]
+        }
+    ]
+}
