@@ -1,0 +1,10 @@
+{
+    "name": "Gaming",
+
+    "gesture_map": {
+        "👍 Thumbs Up": "steam",
+        "✌️ Peace": "discord",
+        "✋ Open Palm": "ACTIVATE",
+        "✊ Fist": "DEACTIVATE"
+    }
+}

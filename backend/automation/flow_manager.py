@@ -6,6 +6,9 @@ import platform
 import time
 import webbrowser
 import pyautogui
+from .actions.launch_action import LaunchAction
+from .actions.wait_action import WaitAction
+from .actions.website_action import WebsiteAction
 
 class FlowManager:
 
@@ -15,6 +18,11 @@ class FlowManager:
             "..",
             "config"
         )
+        self.actions = {
+    "launch": LaunchAction(),
+    "wait": WaitAction(),
+    "website": WebsiteAction()
+}
 
         with open(os.path.join(config_dir, "flows.json")) as f:
             self.flows = json.load(f)
@@ -33,36 +41,12 @@ class FlowManager:
         print(f"🚀 Executing Flow: {flow_name}")
 
         for step in flow:
-
-            step_type = step.get("type")
-
-            if step_type == "launch":
-
-                app_name = step.get("target")
-
-                app_path = self.apps.get(app_name)
-
-                if app_path:
-                    self.launch_app(app_path)
-                else:
-                    print(f"❌ App '{app_name}' not found.")
-
-            elif step_type == "wait":
-
-                duration = step.get("duration", 1)
-                print(f"⏳ Waiting {duration} seconds...")
-                time.sleep(duration)
-
-            elif step_type == "website":
-                url = step.get("url")
-                print(f"🌐 Opening {url}")
-                webbrowser.open(url)
-
-            elif step_type == "hotkey":
-                keys = step.get("keys")
-                print(f"⌨️ Pressing {keys}")
-                pyautogui.hotkey(*keys)
-
+            action_type = step.get("type")
+            action = self.actions.get(action_type)
+            if action:
+                action.execute(step, self.apps)
+            else:
+                print(f"❌ Unknown action type: {action_type}")
 
     def launch_app(self, app):
 
@@ -83,3 +67,6 @@ class FlowManager:
 
         except Exception as e:
             print(f"❌ Could not launch {app}: {e}")
+        
+
+    

@@ -1,0 +1,10 @@
+{
+    "name": "Coding",
+
+    "gesture_map": {
+        "👍 Thumbs Up": "coding_flow",
+        "✌️ Peace": "chrome",
+        "✋ Open Palm": "ACTIVATE",
+        "✊ Fist": "DEACTIVATE"
+    }
+}

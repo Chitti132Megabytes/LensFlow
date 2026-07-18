@@ -10,7 +10,7 @@ import cv2
 import mediapipe as mp
 from gestures.gesture_recognizer import GestureRecognizer
 from gestures.gesture_stabilizer import GestureStabilizer
-
+from profile_manager import ProfileManager
 from config.settings import *
 mp_hands = mp.solutions.hands
 
@@ -26,6 +26,9 @@ mp_draw = mp.solutions.drawing_utils
 recognizer = GestureRecognizer()
 stabilizer = GestureStabilizer()
 action_manager = ActionManager()
+profile_manager = ProfileManager()
+profile_manager.load("coding")
+gesture_map = profile_manager.get_gesture_map()
 
 with open("backend/config/gesture_map.json", "r", encoding="utf-8") as file:
     gesture_map = json.load(file)

@@ -13,14 +13,8 @@
         {
             "type": "website",
             "url": "https://github.com"
-        },
-
-        {
-            "type": "hotkey",
-            "keys": [
-                "ctrl",
-                "l"
-            ]
         }
+
+       
     ]
 }
