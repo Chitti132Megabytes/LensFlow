@@ -1,3 +1,4 @@
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 from mediapipe.framework import status_handler_pb2
 import json
 import os
@@ -24,23 +25,30 @@ class FlowManager:
     "website": WebsiteAction()
 }
 
-        with open(os.path.join(config_dir, "flows.json")) as f:
-            self.flows = json.load(f)
-
-        with open(os.path.join(config_dir, "apps.json")) as f:
+        with open(
+            os.path.join(config_dir, "apps.json"),
+            "r",
+            encoding="utf-8"
+        ) as f:
             self.apps = json.load(f)
 
-    def execute_flow(self, flow_name):
+        with open(
+            os.path.join(config_dir, "flows.json"),
+            "r",
+            encoding="utf-8"
+        ) as f:
+            self.flows = json.load(f)
 
+    def execute_flow(self, flow_name):
         flow = self.flows.get(flow_name)
 
         if not flow:
             print(f"❌ Flow '{flow_name}' not found.")
             return
 
-        print(f"🚀 Executing Flow: {flow_name}")
+        print(f"🚀 Executing Flow: {flow['name']}")
 
-        for step in flow:
+        for step in flow["actions"]:
             action_type = step.get("type")
             action = self.actions.get(action_type)
             if action:
@@ -48,8 +56,40 @@ class FlowManager:
             else:
                 print(f"❌ Unknown action type: {action_type}")
 
-    def launch_app(self, app):
+    def get_apps_for_flow(self, flow_name):
 
+        flow = self.flows.get(flow_name)
+        if not flow:
+            return []
+
+        items = []
+
+        for step in flow["actions"]:
+            if step["type"] == "launch":
+                app = step.get("target")
+
+                if app:
+                    items.append(app.title())
+
+            elif step["type"] == "website":
+                url = step.get("url", "").lower()
+
+                if "github" in url:
+                    items.append("🌐 GitHub")
+
+                elif "chatgpt" in url:
+                    items.append("🌐 ChatGPT")
+
+                elif "stackoverflow" in url:
+                    items.append("🌐 Stack Overflow")
+
+                else:
+                    items.append("🌐 Website")
+
+        return items
+
+    
+    def launch_app(self, app):
         system = platform.system()
 
         try:

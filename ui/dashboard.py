@@ -1,3 +1,4 @@
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 import math
 import datetime
 from PySide6.QtWidgets import (
@@ -13,6 +14,7 @@ from ui.theme import (
 from ui.right_panel import RightPanel
 from backend.studios.studio_manager import StudioManager
 from backend.automation.flow_manager import FlowManager
+from ui.dialogs.create_studio_dialog import CreateStudioDialog
 
 # --- APP PILL ---
 
@@ -330,25 +332,38 @@ class DashboardHome(QWidget):
         # Responsive 3-Column Grid of Studio Cards
         self.grid = QGridLayout()
         self.grid.setSpacing(16)
-        
-        self.studios = [
-            ("Coding", "💻", "Everything is ready. Pick up where you left off.", ["VS Code", "Chrome", "GitHub"], "Last used • 18 mins ago"),
-            ("Creative", "🎨", "Your creative tools are waiting.", ["Figma", "Photoshop", "Pinterest"], "Last used • Yesterday"),
-            ("Gaming", "🎮", "Ready when you are.", ["Discord", "Steam", "Spotify"], "Last used • 2 hours ago"),
-            ("Study", "📚", "Your references and notes are open.", ["Notion", "Acrobat", "Spotify"], "Last used • 3 days ago"),
-            ("Presentation", "📹", "Slide deck ready.", ["PowerPoint", "Acrobat", "Spotify"], "Last used • Last week")
-        ]
-        
-        self.cards = []
-        for idx, (name, icon, desc, apps, last) in enumerate(self.studios):
-            card = StudioCard(name, icon, desc, apps, last_used=last)
+        self.load_studios()
+        content_layout.addLayout(self.grid, 1)
+        self.layout.addWidget(content_widget, 1)
+
+
+    def load_studios(self):
+        while self.grid.count():
+            item = self.grid.takeAt(0)
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+        self.studios = self.studio_manager.get_studios()
+        for idx, studio in enumerate(self.studios):
+            name = studio["name"]
+            icon = studio["icon"]
+            desc = studio["description"]
+            apps = self.flow_manager.get_apps_for_flow(studio["flow"])
+            last = studio["last_used"]
+
+            card = StudioCard(
+                name=name,
+                icon=icon,
+                desc=desc,
+                apps=apps,
+                last_used=last
+            )
+
             card.clicked.connect(self.on_studio_click)
-            self.cards.append(card)
-            
+
             row = idx // 3
             col = idx % 3
             self.grid.addWidget(card, row, col)
-            
         # Add primary Create Studio card at the end
         self.btn_create_studio = StudioCard(
             name="Create Studio",
@@ -358,19 +373,23 @@ class DashboardHome(QWidget):
             is_create_card=True
         )
         self.btn_create_studio.clicked.connect(self.on_studio_click)
-        self.grid.addWidget(self.btn_create_studio, 1, 2) # row 1, column 2
-        
-        content_layout.addLayout(self.grid, 1)
-        self.layout.addWidget(content_widget, 1)
-
+        self.grid.addWidget(self.btn_create_studio, 1, 2)
+    
     def on_studio_click(self, name):
 
         # Keep the existing signal
         self.workspace_changed.emit(name)
 
         # Ignore the create button for now
-        if name == "Create Studio":
-            print("Create Studio clicked")
+        if name == "CreateStudio":
+            dialog = CreateStudioDialog(self)
+            if dialog.exec():
+                self.studio_manager.add_studio(
+                    dialog.name,
+                    dialog.description,
+                    dialog.icon
+                )
+                self.load_studios()
             return
 
         # Look up the studio

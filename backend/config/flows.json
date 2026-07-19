@@ -1,20 +1,22 @@
 {
-    "coding_flow": [
-        {
-            "type": "launch",
-            "target": "chrome"
-        },
+    "coding_flow": {
+        "name": "Coding Flow",
+        "description": "Launch everything needed for development.",
+        "actions": [
+            {
+                "type": "launch",
+                "target": "chrome"
+            },
 
-        {
-            "type": "wait",
-            "duration": 2
-        },
+            {
+                "type": "wait",
+                "duration": 2
+            },
 
-        {
-            "type": "website",
-            "url": "https://github.com"
-        }
-
-       
-    ]
+            {
+                "type": "website",
+                "url": "https://github.com"
+            }
+        ]
+    }
 }
