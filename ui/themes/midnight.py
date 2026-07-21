@@ -1,0 +1,21 @@
+class MidnightTheme:
+    NAME = "Midnight"
+
+    BG_PRIMARY = "#18181B"
+    BG_SIDEBAR = "#111827"
+
+    BG_CARD = "#27272A"
+    BG_CARD_HOVER = "#2D2D30"
+
+    ACCENT = "#7C3AED"
+    ACCENT_HOVER = "#9333EA"
+
+    SUCCESS = "#22C55E"
+
+    TEXT_PRIMARY = "#F8FAFC"
+    TEXT_MUTED = "#A1A1AA"
+
+    BORDER_COLOR = "#3F3F46"
+
+    GRADIENT_START = "#7C3AED"
+    GRADIENT_END = "#3B82F6"

@@ -1,4 +1,25 @@
 from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from backend import studios
+from backend import studios
+from backend import studios
+from backend import studios
+from backend import studios
+from backend.studios import studio_manager
+from cv2 import wechat_qrcode
+from cv2 import wechat_qrcode
+from cv2 import wechat_qrcode
+from cv2 import wechat_qrcode
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
+from PySide6.QtWidgets import QPushButton
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 import math
 import datetime
 from PySide6.QtWidgets import (
@@ -15,6 +36,7 @@ from ui.right_panel import RightPanel
 from backend.studios.studio_manager import StudioManager
 from backend.automation.flow_manager import FlowManager
 from ui.dialogs.create_studio_dialog import CreateStudioDialog
+from ui.dialogs.studio_settings_dialog import StudioSettingsDialog
 
 # --- APP PILL ---
 
@@ -46,7 +68,8 @@ class StudioCard(QFrame):
     active apps, and linear gradient trigger actions.
     """
     clicked = Signal(str)  # Emits Studio name when the primary action is clicked
-    
+    settings_clicked = Signal(str)
+
     def __init__(self, name, icon, desc, apps, last_used="", is_create_card=False, parent=None):
         super().__init__(parent)
         self.name = name
@@ -103,6 +126,10 @@ class StudioCard(QFrame):
             header.addWidget(icon_lbl)
             header.addWidget(name_lbl)
             header.addStretch()
+            self.btn_settings = QPushButton("⚙")
+            self.btn_settings.setFixedSize(28, 28)
+            header.addWidget(self.btn_settings)
+            self.btn_settings.clicked.connect(self.open_settings)
             self.layout.addLayout(header)
             
             # Subtitle Description
@@ -212,6 +239,9 @@ class StudioCard(QFrame):
             self.clicked.emit("CreateStudio")
         super().mousePressEvent(event)
 
+    def open_settings(self):
+        self.settings_clicked.emit(self.name)
+
 
 # --- TOP BAR ---
 
@@ -290,6 +320,7 @@ class DashboardHome(QWidget):
         super().__init__(parent)
         self.studio_manager = StudioManager()
         self.flow_manager = FlowManager()
+        self.current_studio = None
         self.layout = QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.layout.setSpacing(0)
@@ -360,6 +391,7 @@ class DashboardHome(QWidget):
             )
 
             card.clicked.connect(self.on_studio_click)
+            card.settings_clicked.connect(self.on_studio_settings)
 
             row = idx // 3
             col = idx % 3
@@ -394,15 +426,29 @@ class DashboardHome(QWidget):
 
         # Look up the studio
         studio = self.studio_manager.get_studio(name.lower())
+        from ui.theme_manager import set_theme
+        set_theme(
+            studio.get("theme", "midnight")
+        )
+        print(studio["theme"])
 
         if not studio:
             print(f"Studio not found: {name}")
             return
 
-        print(f"Opening {studio['name']} Studio")
+        print(f"Selected {studio['name']} Studio")
+        self.current_studio = studio
 
-        # Execute the linked flow
-        self.flow_manager.execute_flow(studio["flow"])
+    def on_studio_settings(self, name):
+        studio = self.studio_manager.get_studio(name.lower())
+        if not studio:
+            print("Studio not found")
+            return
+        dialog = StudioSettingsDialog(studio, self)
+        if dialog.exec():
+            self.studios = self.studio_manager.get_studios()
+            self.load_studios()
+    
 
 
 class FlowsPage(QWidget):

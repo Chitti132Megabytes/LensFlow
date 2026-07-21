@@ -1,6 +1,3 @@
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -48,14 +45,14 @@ class CreateStudioDialog(QDialog):
             "🚀 Startup"
         ])
 
-        self.create_btn = QPushButton("Create Studio")
-        self.create_btn.clicked.connect(self.create_studio)
+        self.save_btn = QPushButton("Create Studio")
+        self.save_btn.clicked.connect(self.create_studio)
 
         layout.addWidget(title)
         layout.addWidget(self.name_input)
         layout.addWidget(self.desc_input)
         layout.addWidget(self.icon_input)
-        layout.addWidget(self.create_btn)
+        layout.addWidget(self.save_btn)
 
     def create_studio(self):
         self.name = self.name_input.text().strip()

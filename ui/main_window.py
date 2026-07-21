@@ -12,6 +12,7 @@ from ui.sidebar import Sidebar
 from ui.dashboard import (
     DashboardHome, FlowsPage, WorkspacesPage, LivePage, SettingsPage
 )
+from ui.theme import get_global_style
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -58,7 +59,7 @@ class MainWindow(QMainWindow):
         self.page_home.workspace_changed.connect(self.on_workspace_selected)
         
         # Global stylesheet application
-        self.setStyleSheet(GLOBAL_STYLE)
+        self.setStyleSheet(get_global_style())
 
     def on_workspace_selected(self, studio_name):
         """
@@ -70,6 +71,9 @@ class MainWindow(QMainWindow):
         
         # Trigger Sidebar navigation selection to Live (index 3)
         self.sidebar.on_btn_clicked(3)
+
+    def refresh_theme(self):
+        self.setStyleSheet(get_global_style())
 
 
 if __name__ == "__main__":

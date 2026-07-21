@@ -1,0 +1,23 @@
+[
+    {
+        "id": "default",
+        "name": "Default",
+        "gestures": [
+            {
+                "gesture": "Open Palm",
+                "action": "Activate Studio",
+                "enabled": true
+            },
+            {
+                "gesture": "Fist",
+                "action": "Deactivate Studio",
+                "enabled": true
+            },
+            {
+                "gesture": "Peace",
+                "action": "Screenshot",
+                "enabled": false
+            }
+        ]
+    }
+]

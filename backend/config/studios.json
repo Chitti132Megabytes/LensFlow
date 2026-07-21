@@ -6,6 +6,9 @@
         "description": "Everything is ready. Pick up where you left off.",
         "flow": "coding_flow",
         "color": "#7C3AED",
+        "theme": "Light",
+        "accent": "purple",
+        "gesture_profile": "coding",
         "gesture_enabled": false,
         "last_used": "18 mins ago"
     },
@@ -18,14 +21,6 @@
         "color": "#EC4899",
         "gesture_enabled": true,
         "last_used": "Yesterday"
-    },
-    {
-        "id": "fun",
-        "name": "fun",
-        "description": "for games",
-        "icon": "",
-        "flow": "fun_flow",
-        "last_used": "Never"
     },
     {
         "id": "music",

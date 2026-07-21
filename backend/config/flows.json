@@ -16,6 +16,14 @@
             {
                 "type": "website",
                 "url": "https://github.com"
+            },
+
+            {
+                "type": "hotkey",
+                "keys": [
+                    "win",
+                    "e"
+                ]
             }
         ]
     }

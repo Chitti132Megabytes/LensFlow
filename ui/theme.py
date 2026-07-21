@@ -1,24 +1,8 @@
 from PySide6.QtWidgets import QFrame, QGraphicsDropShadowEffect, QPushButton
 from PySide6.QtGui import QColor, QFont
-from PySide6.QtCore import Qt, QPropertyAnimation, QEasingCurve
+from PySide6.QtCore import Qt
 
-# Design Colors
-BG_PRIMARY = "#18181B"
-BG_SIDEBAR = "#111827"
-BG_CARD = "#27272A"
-BG_CARD_HOVER = "#2D2D30"
-ACCENT = "#7C3AED"
-ACCENT_HOVER = "#9333EA"
-SUCCESS = "#22C55E"
-TEXT_PRIMARY = "#F8FAFC"
-TEXT_MUTED = "#A1A1AA"
-BORDER_COLOR = "#3F3F46"
-
-# Warm / Creative Colors
-WARM_AMBER = "#F59E0B"
-WARM_ROSE = "#EC4899"
-GRADIENT_START = "#7C3AED"
-GRADIENT_END = "#3B82F6"
+from ui.theme_manager import get_theme
 
 
 # Fonts
@@ -28,160 +12,212 @@ def get_font(size=10, bold=False):
         font.setBold(True)
     return font
 
-# Global QSS Stylesheet
-GLOBAL_STYLE = f"""
+
+def get_global_style():
+    theme = get_theme()
+
+    return f"""
 QMainWindow {{
-    background-color: {BG_PRIMARY};
+    background-color: {theme.BG_PRIMARY};
 }}
 
 QWidget {{
-    color: {TEXT_PRIMARY};
+    color: {theme.TEXT_PRIMARY};
     font-family: 'Segoe UI', -apple-system, sans-serif;
 }}
 
-/* Scrollbars */
 QScrollBar:vertical {{
     background: transparent;
     width: 6px;
-    margin: 0px;
 }}
+
 QScrollBar::handle:vertical {{
-    background: #3F3F46;
+    background: {theme.BORDER_COLOR};
     min-height: 20px;
     border-radius: 3px;
 }}
+
 QScrollBar::handle:vertical:hover {{
-    background: {ACCENT};
+    background: {theme.ACCENT};
 }}
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {{
     height: 0px;
 }}
 
 QScrollBar:horizontal {{
     background: transparent;
     height: 6px;
-    margin: 0px;
 }}
+
 QScrollBar::handle:horizontal {{
-    background: #3F3F46;
+    background: {theme.BORDER_COLOR};
     min-width: 20px;
     border-radius: 3px;
 }}
+
 QScrollBar::handle:horizontal:hover {{
-    background: {ACCENT};
-}}
-QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {{
-    width: 0px;
+    background: {theme.ACCENT};
 }}
 """
 
+
 class HoverCard(QFrame):
     """
-    A premium card container with soft borders, rounded corners,
-    subtle drop shadow, and interactive hover elevation/glow effects.
+    Premium card container with hover effects.
     """
+
     def __init__(self, parent=None):
         super().__init__(parent)
+
         self.setFrameShape(QFrame.NoFrame)
-        
-        # Initial shadow
+
         self.shadow = QGraphicsDropShadowEffect(self)
         self.shadow.setBlurRadius(16)
         self.shadow.setColor(QColor(0, 0, 0, 100))
         self.shadow.setOffset(0, 4)
         self.setGraphicsEffect(self.shadow)
-        
+
         self.set_normal_style()
-        
+
     def set_normal_style(self):
+
+        theme = get_theme()
+
         self.setStyleSheet(f"""
             QFrame {{
-                background-color: {BG_CARD};
+                background-color: {theme.BG_CARD};
                 border-radius: 16px;
-                border: 1px solid {BORDER_COLOR};
+                border: 1px solid {theme.BORDER_COLOR};
             }}
         """)
-        
+
     def set_hover_style(self):
+
+        theme = get_theme()
+
         self.setStyleSheet(f"""
             QFrame {{
-                background-color: {BG_CARD_HOVER};
+                background-color: {theme.BG_CARD_HOVER};
                 border-radius: 16px;
-                border: 1px solid {ACCENT};
+                border: 1px solid {theme.ACCENT};
             }}
         """)
 
     def enterEvent(self, event):
+
         self.set_hover_style()
+
         self.shadow.setBlurRadius(24)
-        self.shadow.setColor(QColor(124, 58, 237, 50)) # violet soft glow
+        self.shadow.setColor(QColor(124, 58, 237, 50))
         self.shadow.setOffset(0, 6)
+
         super().enterEvent(event)
 
     def leaveEvent(self, event):
+
         self.set_normal_style()
+
         self.shadow.setBlurRadius(16)
         self.shadow.setColor(QColor(0, 0, 0, 100))
         self.shadow.setOffset(0, 4)
+
         super().leaveEvent(event)
 
 
 class ModernButton(QPushButton):
     """
-    A customizable flat button featuring CSS hover animations and transitions.
+    Modern LensFlow button.
     """
+
     def __init__(self, text, primary=False, gradient=False, parent=None):
+
         super().__init__(text, parent)
+
+        theme = get_theme()
+
         self.setFont(get_font(10, bold=True))
         self.setCursor(Qt.PointingHandCursor)
         self.setFixedHeight(40)
-        
+
         if gradient:
+
             self.setStyleSheet(f"""
                 QPushButton {{
-                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 {GRADIENT_START}, stop:1 {GRADIENT_END});
-                    color: {TEXT_PRIMARY};
+                    background: qlineargradient(
+                        x1:0, y1:0, x2:1, y2:0,
+                        stop:0 {theme.GRADIENT_START},
+                        stop:1 {theme.GRADIENT_END}
+                    );
+                    color: {theme.TEXT_PRIMARY};
                     border-radius: 10px;
                     border: none;
                     padding: 0 16px;
                 }}
+
                 QPushButton:hover {{
-                    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #8B5CF6, stop:1 #F43F5E);
-                }}
-                QPushButton:pressed {{
-                    background: #6D28D9;
+                    background-color: {theme.ACCENT_HOVER};
                 }}
             """)
+
         elif primary:
+
             self.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: {ACCENT};
-                    color: {TEXT_PRIMARY};
+                    background-color: {theme.ACCENT};
+                    color: {theme.TEXT_PRIMARY};
                     border-radius: 10px;
                     border: none;
                     padding: 0 16px;
                 }}
+
                 QPushButton:hover {{
-                    background-color: {ACCENT_HOVER};
-                }}
-                QPushButton:pressed {{
-                    background-color: #6D28D9;
+                    background-color: {theme.ACCENT_HOVER};
                 }}
             """)
+
         else:
+
             self.setStyleSheet(f"""
                 QPushButton {{
-                    background-color: #27272A;
-                    color: {TEXT_PRIMARY};
+                    background-color: {theme.BG_CARD};
+                    color: {theme.TEXT_PRIMARY};
                     border-radius: 10px;
-                    border: 1px solid {BORDER_COLOR};
+                    border: 1px solid {theme.BORDER_COLOR};
                     padding: 0 16px;
                 }}
+
                 QPushButton:hover {{
-                    background-color: #3F3F46;
-                    border-color: {TEXT_MUTED};
-                }}
-                QPushButton:pressed {{
-                    background-color: #18181B;
+                    background-color: {theme.BG_CARD_HOVER};
                 }}
             """)
+# Backwards compatibility for existing UI imports
+theme = get_theme()
+
+BG_PRIMARY = theme.BG_PRIMARY
+BG_SIDEBAR = theme.BG_SIDEBAR
+BG_CARD = theme.BG_CARD
+BG_CARD_HOVER = theme.BG_CARD_HOVER
+
+ACCENT = theme.ACCENT
+ACCENT_HOVER = theme.ACCENT_HOVER
+
+SUCCESS = theme.SUCCESS
+
+TEXT_PRIMARY = theme.TEXT_PRIMARY
+TEXT_MUTED = theme.TEXT_MUTED
+
+BORDER_COLOR = theme.BORDER_COLOR
+
+GRADIENT_START = theme.GRADIENT_START
+GRADIENT_END = theme.GRADIENT_END
+
+GLOBAL_STYLE = get_global_style()
+# Creative colors (legacy compatibility)
+WARM_AMBER = "#F59E0B"
+WARM_ROSE = "#EC4899"
+
+# Gradient fallback
+GRADIENT_START = get_theme().GRADIENT_START
+GRADIENT_END = get_theme().GRADIENT_END

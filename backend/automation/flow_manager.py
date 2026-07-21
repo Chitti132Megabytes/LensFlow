@@ -10,6 +10,7 @@ import pyautogui
 from .actions.launch_action import LaunchAction
 from .actions.wait_action import WaitAction
 from .actions.website_action import WebsiteAction
+from .actions.hotkey_action import HotkeyAction
 
 class FlowManager:
 
@@ -22,8 +23,9 @@ class FlowManager:
         self.actions = {
     "launch": LaunchAction(),
     "wait": WaitAction(),
-    "website": WebsiteAction()
-}
+    "website": WebsiteAction(),
+    "hotkey": HotkeyAction()
+}   
 
         with open(
             os.path.join(config_dir, "apps.json"),

@@ -1,0 +1,21 @@
+class LightTheme:
+    NAME = "Light"
+
+    BG_PRIMARY = "#F5F5F5"
+    BG_SIDEBAR = "#ECECEC"
+
+    BG_CARD = "#FFFFFF"
+    BG_CARD_HOVER = "#F8F8F8"
+
+    ACCENT = "#2563EB"
+    ACCENT_HOVER = "#3B82F6"
+
+    SUCCESS = "#16A34A"
+
+    TEXT_PRIMARY = "#111827"
+    TEXT_MUTED = "#6B7280"
+
+    BORDER_COLOR = "#D1D5DB"
+
+    GRADIENT_START = "#2563EB"
+    GRADIENT_END = "#60A5FA"

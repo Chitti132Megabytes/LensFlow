@@ -1,5 +1,3 @@
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 import json
 import os
 
@@ -44,18 +42,25 @@ class StudioManager:
                 return studio
 
         return None
-    
-    def add_studio(self, name, description, icon):
-        studio = {
-            "id": name.lower().replace(" ", "_"),
-            "name": name,
-            "description": description,
-            "icon": icon,
-            "flow": name.lower().replace(" ", "_") + "_flow",
-            "last_used": "Never"
-        }
-        print(studio)
 
+    def save(self):
+        config_dir = os.path.join(
+            os.path.dirname(__file__),
+            "..",
+            "config"
+        )
+        with open(
+            os.path.join(config_dir, "studios.json"),
+            "w",
+            encoding="utf-8"
+        ) as f:
+            json.dump(
+                self.studios,
+                f,
+                indent=4,
+                ensure_ascii=False
+            )
+    
     def add_studio(self, name, description, icon):
 
         studio_id = name.lower().replace(" ", "_")
@@ -70,7 +75,8 @@ class StudioManager:
             "description": description,
             "icon": icon,
             "flow": studio_id + "_flow",
-            "last_used": "Never"
+            "last_used": "Never",
+            "theme":"midnight"
         }
 
         self.studios.append(studio)
@@ -81,21 +87,7 @@ class StudioManager:
             "config"
         )
 
-        self.save_studios()
-
-        print("✅ Studio added!")
-
-        with open(
-            os.path.join(config_dir, "studios.json"),
-            "w",
-            encoding="utf-8"
-        ) as f:
-            json.dump(
-                self.studios,
-                f,
-                indent=4,
-                ensure_ascii=False
-            )
+        self.save()
 
     def delete_studio(self, studio_id):
         self.studios = [
@@ -110,36 +102,40 @@ class StudioManager:
             "config"
         )
 
-        self.save_studios()
+        self.save()
 
         print("✅ Studio deleted!")
     
-    def update_studio(self, studio_id, name, description, icon):
+    def update_studio(self, studio_id, name, description, icon, theme):
+        print("Saving theme:", theme)
         for studio in self.studios:
             if studio["id"] == studio_id:
                 studio["name"] = name
                 studio["description"] = description
                 studio["icon"] = icon
+                studio["theme"] = theme
                 break
-        self.save_studios()
+        self.save()
 
-    def save_studios(self):
-        config_dir = os.path.join(
-            os.path.dirname(__file__),
-            "..",
-            "config"
-        )
-        with open(
-            os.path.join(config_dir, "studios.json"),
-            "w",
-            encoding="utf-8"
-        ) as f:
-            json.dump(
-                self.studios,
-                f,
-                indent=4,
-                ensure_ascii=False
-            )
+    
+
+    def get_studio_theme(self, studio_id):
+        studio = self.get_studio(studio_id)
+        if studio:
+            return studio.get("theme", "dark")
+        return "dark"
+    
+    def get_studio_accent(self, studio_id):
+        studio = self.get_studio(studio_id)
+        if studio:
+            return studio.get("accent", "blue")
+        return "blue"
+
+    def get_gesture_profile(self, studio_id):
+        studio = self.get_studio(studio_id)
+        if studio:
+            return studio.get("gesture_profile")
+        return None
 
 
 if __name__ == "__main__":
