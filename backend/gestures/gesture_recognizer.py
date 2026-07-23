@@ -6,66 +6,85 @@ class GestureRecognizer:
     def __init__(self):
         self.mp_hands = mp.solutions.hands
 
-    def finger_up(self, tip, pip, landmarks):
+    # ----------------------------
+    # Finger helpers
+    # ----------------------------
+
+    def finger_extended(self, tip, pip, landmarks):
         return landmarks[tip].y < landmarks[pip].y
 
-    def thumb_up(self, landmarks):
-        return landmarks[4].y < landmarks[3].y
-
-    def is_fist(self, landmarks):
-
-        index = self.finger_up(8, 6, landmarks)
-        middle = self.finger_up(12, 10, landmarks)
-        ring = self.finger_up(16, 14, landmarks)
-        pinky = self.finger_up(20, 18, landmarks)
-
-        thumb = self.thumb_up(landmarks)
+    def thumb_extended(self, landmarks):
+        thumb_tip = landmarks[4]
+        thumb_ip = landmarks[3]
+        thumb_mcp = landmarks[2]
 
         return (
-            not thumb and
-            not index and
-            not middle and
-            not ring and
-            not pinky
+            abs(thumb_tip.x - thumb_mcp.x) >
+            abs(thumb_ip.x - thumb_mcp.x)
         )
+
+    # ----------------------------
+    # Gestures
+    # ----------------------------
 
     def is_open_palm(self, landmarks):
 
         return (
-            self.finger_up(8, 6, landmarks) and
-            self.finger_up(12, 10, landmarks) and
-            self.finger_up(16, 14, landmarks) and
-            self.finger_up(20, 18, landmarks)
+            self.thumb_extended(landmarks)
+            and self.finger_extended(8, 6, landmarks)
+            and self.finger_extended(12, 10, landmarks)
+            and self.finger_extended(16, 14, landmarks)
+            and self.finger_extended(20, 18, landmarks)
+        )
+
+    def is_fist(self, landmarks):
+
+        return (
+            not self.finger_extended(8, 6, landmarks)
+            and not self.finger_extended(12, 10, landmarks)
+            and not self.finger_extended(16, 14, landmarks)
+            and not self.finger_extended(20, 18, landmarks)
         )
 
     def is_peace(self, landmarks):
 
         return (
-            self.finger_up(8, 6, landmarks) and
-            self.finger_up(12, 10, landmarks) and
-            not self.finger_up(16, 14, landmarks) and
-            not self.finger_up(20, 18, landmarks)
+            self.finger_extended(8, 6, landmarks)
+            and self.finger_extended(12, 10, landmarks)
+            and not self.finger_extended(16, 14, landmarks)
+            and not self.finger_extended(20, 18, landmarks)
         )
 
     def is_thumbs_up(self, landmarks):
 
+        thumb = self.thumb_extended(landmarks)
+
+        index = self.finger_extended(8, 6, landmarks)
+        middle = self.finger_extended(12, 10, landmarks)
+        ring = self.finger_extended(16, 14, landmarks)
+        pinky = self.finger_extended(20, 18, landmarks)
+
+        thumb_tip = landmarks[4]
+        wrist = landmarks[0]
+
         return (
-            self.thumb_up(landmarks) and
-            not self.finger_up(8, 6, landmarks) and
-            not self.finger_up(12, 10, landmarks) and
-            not self.finger_up(16, 14, landmarks) and
-            not self.finger_up(20, 18, landmarks)
+            thumb
+            and thumb_tip.y < wrist.y
+            and not index
+            and not middle
+            and not ring
+            and not pinky
         )
+
+    # ----------------------------
+    # Main detector
+    # ----------------------------
 
     def detect(self, hand_landmarks):
 
         landmarks = hand_landmarks.landmark
 
-        if self.is_thumbs_up(landmarks):
-            return "👍 Thumbs Up"
-
-        if self.is_fist(landmarks):
-            return "✊ Fist"
+        # Order matters!
 
         if self.is_open_palm(landmarks):
             return "✋ Open Palm"
@@ -73,4 +92,10 @@ class GestureRecognizer:
         if self.is_peace(landmarks):
             return "✌️ Peace"
 
-        return "Unknown"
+        if self.is_fist(landmarks):
+            return "✊ Fist"
+
+        if self.is_thumbs_up(landmarks):
+            return "👍 Thumbs Up"
+
+        return None

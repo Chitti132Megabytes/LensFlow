@@ -1,25 +1,9 @@
 from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from backend import studios
-from backend import studios
-from backend import studios
-from backend import studios
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 from backend import studios
 from backend.studios import studio_manager
 from cv2 import wechat_qrcode
-from cv2 import wechat_qrcode
-from cv2 import wechat_qrcode
-from cv2 import wechat_qrcode
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 from PySide6.QtWidgets import QPushButton
-from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 import math
 import datetime
 from PySide6.QtWidgets import (
@@ -37,6 +21,8 @@ from backend.studios.studio_manager import StudioManager
 from backend.automation.flow_manager import FlowManager
 from ui.dialogs.create_studio_dialog import CreateStudioDialog
 from ui.dialogs.studio_settings_dialog import StudioSettingsDialog
+from ui.camera_thread import CameraThread
+
 
 # --- APP PILL ---
 
@@ -438,6 +424,7 @@ class DashboardHome(QWidget):
 
         print(f"Selected {studio['name']} Studio")
         self.current_studio = studio
+        self.flow_manager.set_current_studio(studio)
 
     def on_studio_settings(self, name):
         studio = self.studio_manager.get_studio(name.lower())
@@ -738,10 +725,19 @@ class LivePage(QWidget):
         
         self.btn_toggle = ModernButton("Start Live Camera Pipeline", primary=True)
         left_layout.addWidget(self.btn_toggle)
+        self.btn_toggle.clicked.connect(self.start_camera)
+
         left_layout.addStretch()
-        
+
         # Right Panel: Telemetry module
         self.right_panel = RightPanel()
+
+        # Camera thread
+        self.camera = CameraThread()
+        self.camera.frame_ready.connect(
+            self.right_panel.camera_view.update_frame
+        )
+
         # Give right panel curved borders to match the design
         self.right_panel.setStyleSheet(f"""
             QFrame {{
@@ -753,6 +749,10 @@ class LivePage(QWidget):
         
         layout.addLayout(left_layout, 3)
         layout.addWidget(self.right_panel, 2)
+    
+    def start_camera(self):
+        if not self.camera.isRunning():
+            self.camera.start()
 
 
 class GesturesPage(QWidget):

@@ -1,12 +1,13 @@
 import subprocess
 import platform
 import time
-from automation.flow_manager import FlowManager
+from backend.automation.flow_manager import FlowManager
 
 class ActionManager:
 
     def __init__(self):
         self.active = False
+        self.current_studio = None
         self.last_action = ""
         self.last_action_time = 0
         self.cooldown = 2 
@@ -30,6 +31,10 @@ class ActionManager:
 
         # Ignore gestures while inactive
         if not self.active:
+            return
+
+        if action == "RUN_CURRENT_STUDIO":
+            self.flow_manager.run_current_studio()
             return
 
         print(f"Executing action: {action}")
@@ -67,3 +72,6 @@ class ActionManager:
 
         except Exception as e:
             print(f"❌ Could not launch {app}: {e}")
+
+    def set_current_studio(self, studio):
+        self.current_studio = studio

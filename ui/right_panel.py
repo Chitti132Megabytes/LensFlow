@@ -1,3 +1,5 @@
+from PySide6.QtGui import QPixmap
+from mediapipe.tasks.cc.vision.gesture_recognizer.proto import gesture_classifier_graph_options_pb2
 from PySide6.QtWidgets import (
     QFrame, QVBoxLayout, QHBoxLayout, QLabel, QProgressBar, QWidget
 )
@@ -6,6 +8,8 @@ from PySide6.QtGui import QPainter, QColor, QPen
 from ui.theme import (
     BG_CARD, BORDER_COLOR, ACCENT, SUCCESS, TEXT_PRIMARY, TEXT_MUTED, get_font
 )
+from PySide6.QtGui import QImage, QPixmap
+import cv2
 
 class CameraViewfinder(QFrame):
     """
@@ -26,25 +30,10 @@ class CameraViewfinder(QFrame):
         
         # Center message
         self.layout = QVBoxLayout(self)
-        self.layout.setAlignment(Qt.AlignCenter)
-        
-        self.icon_label = QLabel("📷")
-        self.icon_label.setFont(get_font(24))
-        self.icon_label.setAlignment(Qt.AlignCenter)
-        
-        self.text_label = QLabel("No Camera Connected")
-        self.text_label.setFont(get_font(10, bold=True))
-        self.text_label.setStyleSheet("color: #EF4444;")
-        self.text_label.setAlignment(Qt.AlignCenter)
-        
-        self.subtext = QLabel("OpenCV pipeline offline")
-        self.subtext.setFont(get_font(8))
-        self.subtext.setStyleSheet(f"color: {TEXT_MUTED};")
-        self.subtext.setAlignment(Qt.AlignCenter)
-        
-        self.layout.addWidget(self.icon_label)
-        self.layout.addWidget(self.text_label)
-        self.layout.addWidget(self.subtext)
+        self.camera_label = QLabel()
+        self.camera_label.setAlignment(Qt.AlignCenter)
+        self.camera_label.setScaledContents(True)
+        self.layout.addWidget(self.camera_label)
         
         # Blink animation timer for "OFFLINE" badge
         self.badge_visible = True
@@ -90,6 +79,20 @@ class CameraViewfinder(QFrame):
             painter.setBrush(QColor("#EF4444"))
             painter.setPen(Qt.NoPen)
             painter.drawEllipse(w - 25, 20, 8, 8)
+
+    def update_frame(self, frame):
+        rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb.shape
+        bytes_per_line = ch * w
+        image = QImage(
+            rgb.data,
+            w,
+            h,
+            bytes_per_line,
+            QImage.Format_RGB888
+        )
+        pixmap = QPixmap.fromImage(image)
+        self.camera_label.setPixmap(pixmap)
 
 
 class TimelineStep(QWidget):

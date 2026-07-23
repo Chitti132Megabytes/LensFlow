@@ -15,6 +15,7 @@ from .actions.hotkey_action import HotkeyAction
 class FlowManager:
 
     def __init__(self):
+        self.current_studio = None
         config_dir = os.path.join(
             os.path.dirname(__file__),
             "..",
@@ -109,6 +110,16 @@ class FlowManager:
 
         except Exception as e:
             print(f"❌ Could not launch {app}: {e}")
-        
+
+    def set_current_studio(self, studio):
+        self.current_studio = studio
+
+
+    def run_current_studio(self):
+        if not self.current_studio:
+            print("⚠ No studio selected.")
+            return
+
+        self.execute_flow(self.current_studio["flow"])    
 
     
